@@ -8,6 +8,7 @@ import uvicorn
 import json
 import jsonschema
 import pandas as pd
+import os
 
 app=FastAPI()
 fake=Faker()
@@ -48,8 +49,8 @@ async def fakeCSVForSchema(request:Request):
         stuff = dfdata
         df.loc[i] = [item() for item in stuff]
 
-    df.to_csv("output/"+tablename+".csv",index=False)
-    return FileResponse(path="output/"+tablename+".csv", 
+    df.to_csv(os.getcwd()+"/output/"+tablename+".csv",index=False)
+    return FileResponse(path=os.getcwd()+"/output/"+tablename+".csv", 
         filename=tablename+".csv", media_type='text/csv')
 
 
