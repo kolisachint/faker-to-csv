@@ -1,0 +1,18 @@
+version: "3.8"
+    
+services:
+  python3.9:
+    build: 
+      context: .
+      args:
+        arch: amd64
+      dockerfile: Dockerfile
+    image: kolisachint/faker-to-csv
+    ports: 
+      - 55002:5000
+    networks: 
+      - python-dev-network
+
+networks:
+  python-dev-network:
+

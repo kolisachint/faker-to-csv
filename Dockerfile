@@ -1,10 +1,14 @@
-FROM ubuntu:20.04
+ARG arch
+FROM --platform=linux/${arch} ubuntu:20.04
+
 
 COPY . /app
 
 # Ensure apt is in non-interactive to avoid prompts
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get update  \
-  && apt-get -y install --no-install-recommends python3.9-minimal python3-pip git ssh \
+  && apt-get -y install --no-install-recommends python3-pip  \
+  && pip3 --disable-pip-version-check --no-cache-dir \
+      install -r /app/requirements.txt \
   && apt-get autoremove -y && apt-get clean -y  \
   && rm -rf /var/lib/apt/lists/*  \
         /tmp/* \
@@ -12,9 +16,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && apt-get update  \
         /usr/share/man \
         /usr/share/doc \
         /usr/share/doc-base \
-  && chmod -R 755 /app \
-  && pip3 --disable-pip-version-check --no-cache-dir \
-      install -r /app/requirements.txt
+  && chmod -R 755 /app 
+
 
 ENTRYPOINT ["/app/entrypoint.sh"]
 
