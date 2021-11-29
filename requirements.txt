@@ -1,8 +1,17 @@
 asgiref==3.4.1
+attrs==21.2.0
 click==8.0.1
+Faker==9.8.3
 fastapi==0.68.1
 h11==0.12.0
+importlib-resources==5.4.0
+jsonschema==4.2.1
 pydantic==1.8.2
+pyrsistent==0.18.0
+python-dateutil==2.8.2
+six==1.16.0
 starlette==0.14.2
+text-unidecode==1.3
 typing-extensions==3.10.0.2
 uvicorn==0.15.0
+zipp==3.6.00
