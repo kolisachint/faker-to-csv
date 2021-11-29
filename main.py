@@ -49,8 +49,9 @@ async def fakeCSVForSchema(request:Request):
         stuff = dfdata
         df.loc[i] = [item() for item in stuff]
 
-    df.to_csv(os.getcwd()+"/output/"+tablename+".csv",index=False)
-    return FileResponse(path=os.getcwd()+"/output/"+tablename+".csv", 
+    filepath=os.path.dirname(os.path.abspath(__file__))
+    df.to_csv(filepath+"/output/"+tablename+".csv",index=False)
+    return FileResponse(path=filepath+"/output/"+tablename+".csv", 
         filename=tablename+".csv", media_type='text/csv')
 
 
