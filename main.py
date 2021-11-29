@@ -1,5 +1,6 @@
 from fastapi import FastAPI,Request
 from fastapi.responses import FileResponse
+from starlette.responses import FileResponse
 from faker import Faker
 from resources.tableschema import TableSchema
 from resources.request_response import post_response_json,get_response_json
@@ -10,9 +11,9 @@ import jsonschema
 import pandas as pd
 
 app=FastAPI()
-faker=Faker()
+fake=Faker()
 schema_json={}
-
+numrows=10
 
 def validate_json(_data, _schema):
     try:
@@ -24,19 +25,49 @@ def validate_json(_data, _schema):
 
 @app.post("/FakeCSVForSchema")
 async def fakeCSVForSchema(request:Request):        
+    numrows=request.headers.get("NumofRows")
+    tablename=request.headers.get("TableName")
+
     data_json=await request.json()
     valid_json=validate_json(data_json,TableSchema)
     if (valid_json !=True):
-        return post_response_json["Response_400"] 
-    
+        return post_respognse_json["Response_400"] 
+
+    print(numrows)
+
     fields=json.loads(json.dumps(data_json))
+#    for field in fields:
+#        outputfile.writelines(field["description"])
+
+# Dynamically create columns and data for the input
 
 
-    with open("output/table.csv","w") as outputfile:
-        for i in range(1):
-            for field in fields:
-                outputfile.writelines(field["description"])
-    return FileResponse(path="output/table.csv", filename="table.csv", media_type='text')
+    df = pd.DataFrame(columns=('name'
+        , 'email'
+        , 'bs'
+        , 'address'
+        , 'city'
+        , 'state'
+        , 'date_time'
+        , 'paragraph'
+        , 'Conrad'))
+
+    for i in range(int(numrows)):
+        stuff = [fake.name()
+            , fake.email()
+            , fake.bs()
+            , fake.address()
+            , fake.city()
+            , fake.state()
+            , fake.date_time()
+            , fake.paragraph()
+            , fake.catch_phrase()]
+
+        df.loc[i] = [item for item in stuff]
+
+    df.to_csv("output/"+tablename+".csv")
+    return FileResponse(path="output/"+tablename+".csv", 
+        filename=tablename+"csv", media_type='text/csv')
 
 
 
