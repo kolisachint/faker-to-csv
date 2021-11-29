@@ -1,6 +1,5 @@
 from fastapi import FastAPI,Request
 from fastapi.responses import FileResponse
-from starlette.responses import FileResponse
 from faker import Faker
 from resources.tableschema import TableSchema
 from resources.request_response import post_response_json,get_response_json
@@ -33,42 +32,25 @@ async def fakeCSVForSchema(request:Request):
     if (valid_json !=True):
         return post_respognse_json["Response_400"] 
 
-    print(numrows)
-
-    fields=json.loads(json.dumps(data_json))
-#    for field in fields:
-#        outputfile.writelines(field["description"])
 
 # Dynamically create columns and data for the input
+    dfheader=()
+    dfdata=[]
+    fields=json.loads(json.dumps(data_json))
+    for field in fields:
+        dfheader+=(field["name"],)
+        dfdata.append(   getattr(Faker(), \
+                        field["faketype"].split('.')[1].split('(')[0]   ) ) 
 
-
-    df = pd.DataFrame(columns=('name'
-        , 'email'
-        , 'bs'
-        , 'address'
-        , 'city'
-        , 'state'
-        , 'date_time'
-        , 'paragraph'
-        , 'Conrad'))
+    df = pd.DataFrame(columns=dfheader)
 
     for i in range(int(numrows)):
-        stuff = [fake.name()
-            , fake.email()
-            , fake.bs()
-            , fake.address()
-            , fake.city()
-            , fake.state()
-            , fake.date_time()
-            , fake.paragraph()
-            , fake.catch_phrase()]
+        stuff = dfdata
+        df.loc[i] = [item() for item in stuff]
 
-        df.loc[i] = [item for item in stuff]
-
-    df.to_csv("output/"+tablename+".csv")
+    df.to_csv("output/"+tablename+".csv",index=False)
     return FileResponse(path="output/"+tablename+".csv", 
-        filename=tablename+"csv", media_type='text/csv')
-
+        filename=tablename+".csv", media_type='text/csv')
 
 
 if __name__ == '__main__':
